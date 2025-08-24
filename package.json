@@ -1,7 +1,7 @@
 {
   "name": "resume",
   "version": "1.0.0",
-  "main": "dist/index.ts",
+  "main": "dist/index.js",
   "description": "Um bot de WhatsApp que resume conversas de grupo.",
   "type": "commonjs",
   "scripts": {
