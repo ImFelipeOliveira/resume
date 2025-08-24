@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+     "rootDir": "./src",
+     "outDir": "./dist",
+    "module": "commonjs",
+    "target": "es2022",
+    "moduleResolution": "node",
+    "declaration": true,
+    "declarationMap": true,
+    "strict": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+  }
+}
