@@ -22,7 +22,13 @@
     "redis": "^5.8.2"
   },
   "devDependencies": {
+    "@types/estree": "^1.0.8",
+    "@types/json-schema": "^7.0.15",
+    "@types/long": "^4.0.2",
+    "@types/node": "^24.3.0",
     "@types/qrcode": "^1.5.5",
+    "@types/strip-bom": "^3.0.0",
+    "@types/strip-json-comments": "^0.0.30",
     "ts-node-dev": "^2.0.0"
   }
 }
