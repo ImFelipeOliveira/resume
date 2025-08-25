@@ -50,4 +50,14 @@ export class GeminiService {
         }
     }
 
+    async customPrompt(prompt: string) {
+        try {
+            const result: GenerateContentResult = await this.model.generateContent(prompt);
+            return result.response.text().trim();
+        } catch (error) {
+            console.error("Erro ao chamar a API do Gemini:", error);
+            return "Desculpe, não foi possível gerar a mensagem no momento.";
+        }
+    }
+
 }

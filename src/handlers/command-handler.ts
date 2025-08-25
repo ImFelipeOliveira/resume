@@ -1,4 +1,4 @@
-import {proto, WASocket} from "@whiskeysockets/baileys";
+import {GroupMetadata, proto, WASocket} from "@whiskeysockets/baileys";
 import {RedisClient} from "../services/redis-service";
 import {GeminiService} from "../services/ai-service";
 
@@ -21,17 +21,44 @@ export class CommandHandler {
     async commandHandler(sock: WASocket, message: proto.IWebMessageInfo, text: string): Promise<void> {
         const groupId = message.key.remoteJid!;
         const [command, ...args] = text.trim().substring(1).split(/\s+/);
+        let targetDate: Date | null;
+        let groupMetadata: GroupMetadata;
+        let groupName: string;
+
 
         switch (command.toLowerCase()) {
+            case 'bom-dia':
+            case 'bom dia':
+                targetDate = this.parseDateFromArgs(args);
+                groupMetadata = await sock.groupMetadata(groupId);
+                groupName = groupMetadata.subject;
+
+                const message = await this.aiService.customPrompt(
+                    `Você é um bot de um grupo de WhatsApp.  
+                            Alguém te deu "bom dia". O nome do grupo é ${groupName}.  
+                            
+                            Responda **exatamente nesse formato**:  
+                            
+                            1. Escreva: "Bom dia, ${groupName} ☀️"  
+                            2. Logo abaixo, escreva uma mensagem motivacional curta (2 a 3 frases),  
+                               no estilo de correntes de WhatsApp de pessoas idosas:  
+                               - linguagem simples e positiva  
+                               - incluir emojis (flores, sol, café, corações etc.)  
+                               - trazer uma ideia de esperança, paz ou alegria para o dia.  
+                            
+                            Não adicione nada além disso.
+                    `
+                )
+                await sock.sendMessage(groupId, {text: message});
+                break
             case 'resume':
             case 'resumo':
-                const targetDate = this.parseDateFromArgs(args);
+                targetDate = this.parseDateFromArgs(args);
 
                 if (!targetDate) {
-                    await sock.sendMessage(groupId, {text: 'Formato de data inválido. Use DD-MM-YYYY.'});
+
                     return;
                 }
-
                 const messages = await this.redisClient.getMessagesByDate(groupId, targetDate);
 
                 if (messages.length === 0) {
@@ -41,8 +68,8 @@ export class CommandHandler {
                     return;
                 }
 
-                const groupMetadata = await sock.groupMetadata(groupId);
-                const groupName = groupMetadata.subject;
+                groupMetadata = await sock.groupMetadata(groupId);
+                groupName = groupMetadata.subject;
 
                 await sock.sendMessage(groupId, {text: `Ok! ${groupName}, estou preparando o resumo... 🧠`});
                 const summary = await this.aiService.summarizeMessages(messages);
