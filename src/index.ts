@@ -29,7 +29,7 @@ async function startBot() {
 
         if (qr) {
             console.log('QR Code recebido, escaneie com seu celular:');
-            toString(qr, {type: "terminal"}, (err, url) => {
+            toString(qr, {type: "terminal", small: true}, (err, url) => {
                 console.log(url)
             })
         }
