@@ -33,7 +33,7 @@ export class RedisClient {
         const key = this.getRedisKey(groupId, new Date(messageData.timestamp));
         const messageString = JSON.stringify(messageData);
         await this.redisClient.lPush(key, messageString)
-        await this.redisClient.expire(key, 86400)
+        await this.redisClient.expire(key, 25200)
     }
 
     async getMessagesByDate(groupId: string, date: Date): Promise<MessageData[]> {
