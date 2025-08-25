@@ -39,8 +39,8 @@ export class CommandHandler {
                             
                             Responda **exatamente nesse formato**:  
                             
-                            1. Escreva: "Bom dia, ${groupName} ☀️"  
-                            2. Logo abaixo, escreva uma mensagem motivacional curta (2 a 3 frases),  
+                            Escreva: "Bom dia, ${groupName} ☀️"  
+                            Logo abaixo, escreva uma mensagem motivacional curta (2 a 3 frases),  
                                no estilo de correntes de WhatsApp de pessoas idosas:  
                                - linguagem simples e positiva  
                                - incluir emojis (flores, sol, café, corações etc.)  
