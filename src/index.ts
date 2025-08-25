@@ -6,6 +6,7 @@ import makeWASocket, {DisconnectReason, useMultiFileAuthState, WASocket} from "@
 import {pino} from "pino";
 import {Boom} from "@hapi/boom";
 import {toString} from "qrcode";
+import {createServer} from "./server";
 
 async function startBot() {
     // Instancia os serviços
@@ -15,6 +16,9 @@ async function startBot() {
     // Instancia handlers
     const commandHandler = new CommandHandler(redisClient, geminiService);
     const messageHandler = new MessageHandler(redisClient, commandHandler);
+
+    const qrState = {qr: null as string | null};
+    createServer(qrState);
 
     const {state, saveCreds} = await useMultiFileAuthState('auth_info_baileys')
     const sock: WASocket = makeWASocket({
@@ -26,6 +30,8 @@ async function startBot() {
 
     sock.ev.on('connection.update', (update) => {
         const {connection, lastDisconnect, qr} = update;
+
+        qrState.qr = qr ?? null;
 
         if (qr) {
             console.log('QR Code recebido, escaneie com seu celular:');
@@ -43,6 +49,7 @@ async function startBot() {
         }
     });
 
+    sock.ev.on('creds.update', saveCreds);
     // 4. Delegar o evento de mensagem para a instância do MessageHandler
     sock.ev.on('messages.upsert', (m) => messageHandler.handleMessage(sock, m));
 }

@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "description": "Um bot de WhatsApp que resume conversas de grupo.",
-  "type": "commonjs",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
@@ -16,6 +15,7 @@
     "@google/generative-ai": "^0.24.1",
     "@whiskeysockets/baileys": "^6.7.18",
     "dotenv": "^17.2.1",
+    "express": "^5.1.0",
     "openai": "^5.15.0",
     "pino": "^9.9.0",
     "qrcode": "^1.5.4",
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/estree": "^1.0.8",
+    "@types/express": "^5.0.3",
     "@types/json-schema": "^7.0.15",
     "@types/long": "^4.0.2",
     "@types/node": "^24.3.0",
