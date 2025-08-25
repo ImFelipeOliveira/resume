@@ -46,7 +46,7 @@ export class CommandHandler {
 
                 await sock.sendMessage(groupId, {text: `Ok! ${groupName}, estou preparando o resumo... 🧠`});
                 const summary = await this.aiService.summarizeMessages(messages);
-                await sock.sendMessage(groupId, {text: `*Resumo:\n\n${summary}*`});
+                await sock.sendMessage(groupId, {text: `*Resumo:*\n\n${summary}`});
                 break;
 
             default:
