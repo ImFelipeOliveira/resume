@@ -10,7 +10,8 @@ export const env = {
     rabbitmq: {
         url: process.env.RABBITMQ_URL,
         queues: {
-            summary: process.env.RABBITMQ_SUMMARY_QUEUE
+            summary: process.env.RABBITMQ_SUMMARY_QUEUE,
+            reply: process.env.RABBITMQ_REPLY_QUEUE
         }
     }
 }

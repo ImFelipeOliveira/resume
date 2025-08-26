@@ -2,14 +2,17 @@ import {GroupMetadata, proto, WASocket} from "@whiskeysockets/baileys";
 import {MessageData, RedisClientService} from "../services/redis-service";
 import {GeminiService} from "../services/ai-service";
 import {IFactory} from "../factories/interfaces/IFactory";
+import {SummaryQueue} from "../message-broker/queue/summary-queue";
 
 export class CommandHandler {
     private redisClient: RedisClientService;
     private geminiService: GeminiService;
+    private summaryQueue: SummaryQueue;
 
     constructor(private factory: IFactory) {
         this.redisClient = factory.ServiceFactory.createRedisService()
         this.geminiService = factory.ServiceFactory.createGeminiService()
+        this.summaryQueue = factory.QueueFactory.createSummaryQueue()
     }
 
     parseDateFromArgs(args: string[]): Date | null {
@@ -37,9 +40,7 @@ export class CommandHandler {
                 targetDate = this.parseDateFromArgs(args);
                 groupMetadata = await sock.groupMetadata(groupId);
                 groupName = groupMetadata.subject;
-
-                const message = await this.geminiService.customPrompt(
-                    `Você é um bot de um grupo de WhatsApp.  
+                const prompt = `Você é um bot de um grupo de WhatsApp.  
                             Alguém te deu "bom dia". O nome do grupo é ${groupName}.  
                             
                             Responda **exatamente nesse formato**:  
@@ -52,9 +53,9 @@ export class CommandHandler {
                                - trazer uma ideia de esperança, paz ou alegria para o dia.  
                             
                             Não adicione nada além disso.
-                    `
-                )
-                await sock.sendMessage(groupId, {text: message});
+                            `
+
+                await this.summaryQueue.enqueue({groupId: groupId, message: prompt})
                 break
             case 'resume':
             case 'resumo':
@@ -77,8 +78,7 @@ export class CommandHandler {
                 groupName = groupMetadata.subject;
 
                 await sock.sendMessage(groupId, {text: `Ok! ${groupName}, estou preparando o resumo... 🧠`});
-                const summary = await this.geminiService.summarizeMessages(messages);
-                await sock.sendMessage(groupId, {text: `*Resumo:*\n\n${summary}`});
+                await this.summaryQueue.enqueue({groupId: groupId, message: messages})
                 break;
 
             default:

@@ -11,6 +11,7 @@ import {Boom} from "@hapi/boom";
 
 export class BaileysService {
     private messageHandler: MessageHandler;
+    private sock: WASocket | null = null;
 
     constructor(private factory: IFactory) {
         this.messageHandler = this.factory.HandlerFactory.createMessageHandler()
@@ -18,14 +19,14 @@ export class BaileysService {
 
     async execute(qrState: { qr: string | null }, startBot: Function) {
         const {state, saveCreds} = await useMultiFileAuthState('auth_info_baileys')
-        const sock: WASocket = makeWASocket({
+        this.sock = makeWASocket({
             logger: pino({level: 'silent'}),
             auth: state,
         });
 
-        sock.ev.on('creds.update', saveCreds);
+        this.sock.ev.on('creds.update', saveCreds);
 
-        sock.ev.on('connection.update', (update) => {
+        this.sock.ev.on('connection.update', (update) => {
             const {connection, lastDisconnect, qr} = update;
 
             qrState.qr = qr ?? null;
@@ -45,8 +46,13 @@ export class BaileysService {
                 console.log('Bot conectado com sucesso! 🤖');
             }
         });
-        sock.ev.on('creds.update', saveCreds);
+        this.sock.ev.on('creds.update', saveCreds);
         // 4. Delegar o evento de mensagem para a instância do MessageHandler
-        sock.ev.on('messages.upsert', (m) => this.messageHandler.handleMessage(sock, m));
+        this.sock.ev.on('messages.upsert', (m) => this.messageHandler.handleMessage(this.sock!, m));
+    }
+
+    async sendMessage(groupId: string, message: string) {
+        if (!this.sock) throw new Error("Bot não conectado")
+        await this.sock.sendMessage(groupId, {text: message})
     }
 }

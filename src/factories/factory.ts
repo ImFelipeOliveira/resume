@@ -7,6 +7,8 @@ import {MessageHandler} from "../handlers/message-handler";
 import {BaileysService} from "../services/baileys-service";
 import {SummaryQueue} from "../message-broker/queue/summary-queue";
 import {SummaryWorker} from "../message-broker/workers/summary-worker";
+import {ReplyQueue} from "../message-broker/queue/reply-queue";
+import {ReplyWorker} from "../message-broker/workers/reply-worker";
 
 
 const geminiService = new GeminiService()
@@ -26,10 +28,19 @@ export const factory: IFactory = {
         createMessageHandler: () => new MessageHandler(factory)
     },
     QueueFactory: {
-        createSummaryQueue: () => new SummaryQueue(factory.AdapterFactory)
+        createSummaryQueue: () => new SummaryQueue(factory.AdapterFactory),
+        createReplyQueue: () => new ReplyQueue(
+            factory.AdapterFactory,
+            factory.ServiceFactory
+        )
     },
     WorkerFactory: {
         createSummaryWorker: () => new SummaryWorker(
+            factory.AdapterFactory,
+            factory.ServiceFactory,
+            factory.QueueFactory
+        ),
+        createReplyWorker: () => new ReplyWorker(
             factory.AdapterFactory,
             factory.ServiceFactory
         )
