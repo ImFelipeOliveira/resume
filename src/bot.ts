@@ -4,7 +4,6 @@ import {createServer} from "./server";
 
 async function main() {
     try {
-        console.log('[Bot] Inicializando serviços...');
         await factory.ServiceFactory.createRedisService().connect();
         const baileysService = factory.ServiceFactory.createBaileysService();
         const qrState = {qr: null as string | null};
@@ -19,7 +18,6 @@ async function main() {
             }
         };
         await connectToWhatsApp();
-        console.log('[Bot] Conexão inicial estabelecida. Iniciando o Reply Worker...');
         const replyWorker = factory.WorkerFactory.createReplyWorker(baileysService);
         await replyWorker.processTask()
     } catch (err) {
