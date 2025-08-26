@@ -1,22 +1,34 @@
 import {factory} from "./factories/factory";
 import {createServer} from "./server";
 
-async function start() {
-    try {
-        console.log('[Bot] Initializing...');
-        await factory.ServiceFactory.createRedisService().connect();
 
-        const baileysService = factory.ServiceFactory.createBaileysService()
+async function main() {
+    try {
+        console.log('[Bot] Inicializando serviços...');
+        await factory.ServiceFactory.createRedisService().connect();
+        const baileysService = factory.ServiceFactory.createBaileysService();
         const qrState = {qr: null as string | null};
         createServer(qrState);
-        await baileysService.execute(qrState, start);
-        console.log('[Bot] Conexão estabelecida. Iniciando o Reply Worker...');
+        const connectToWhatsApp = async () => {
+            try {
+                await baileysService.execute(qrState, connectToWhatsApp);
+            } catch (err) {
+                console.error('[Bot] Falha ao conectar com o WhatsApp. Tentando novamente em 15 segundos...', err);
+                await new Promise(resolve => setTimeout(resolve, 15000));
+                await connectToWhatsApp();
+            }
+        };
+        await connectToWhatsApp();
+        console.log('[Bot] Conexão inicial estabelecida. Iniciando o Reply Worker...');
         const replyWorker = factory.WorkerFactory.createReplyWorker(baileysService);
-        await replyWorker.processTask()
+        replyWorker.processTask().catch(err => {
+            console.error('[Bot] O Reply Worker encontrou um erro fatal:', err);
+            process.exit(1);
+        });
     } catch (err) {
         console.error("[Bot] Um erro crítico ocorreu durante a inicialização: ", err);
         process.exit(1);
     }
 }
 
-start().catch(err => console.error("[Bot] Erro inesperado na inicialização:", err));
+main().catch(err => console.error("[Bot] Erro inesperado na inicialização:", err));
