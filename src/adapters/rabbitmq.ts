@@ -24,17 +24,12 @@ export class RabbitMQ {
 
     async consume(queue: string, callback: (msg: string) => void): Promise<void> {
         await this.channel.assertQueue(queue, {durable: true});
-        try {
-            await this.channel.consume(queue, (msg) => {
-                if (msg !== null) {
-                    callback(msg.content.toString());
-                    this.channel.ack(msg);
-                }
-            });
-        } catch {
-            await this.channel.nack(msg, false)
-        }
-
+        await this.channel.consume(queue, (msg) => {
+            if (msg !== null) {
+                callback(msg.content.toString());
+                this.channel.ack(msg);
+            }
+        });
     }
 
     async close(): Promise<void> {
