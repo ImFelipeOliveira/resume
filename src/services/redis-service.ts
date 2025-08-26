@@ -44,12 +44,10 @@ export class RedisClientService {
     }
 
     async addToSet(key: string, members: string | string[]) {
-        if (!this.isConnected) await this.connect();
-        return this.client.sAdd(key, members);
+        return this.redisClient.sAdd(key, members);
     }
 
     async getSetMembers(key: string): Promise<string[]> {
-        if (!this.isConnected) await this.connect();
-        return this.client.sMembers(key);
+        return this.redisClient.sMembers(key);
     }
 }

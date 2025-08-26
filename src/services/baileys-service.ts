@@ -8,12 +8,15 @@ import makeWASocket, {
 import {pino} from "pino";
 import {toString} from "qrcode";
 import {Boom} from "@hapi/boom";
+import {RedisClientService} from "./redis-service";
 
 export class BaileysService {
     private messageHandler: MessageHandler;
     private sock: WASocket | null = null;
+    private redisService: RedisClientService;
 
     constructor(private factory: IFactory) {
+        this.redisService = this.factory.ServiceFactory.createRedisService();
         this.messageHandler = this.factory.HandlerFactory.createMessageHandler()
     }
 
@@ -24,14 +27,10 @@ export class BaileysService {
                 logger: pino({level: 'silent'}),
                 auth: state,
             });
-
             this.sock.ev.on('creds.update', saveCreds);
-
-            this.sock.ev.on('connection.update', (update) => {
+            this.sock.ev.on('connection.update', async (update) => {
                 const {connection, lastDisconnect, qr} = update;
-
                 qrState.qr = qr ?? null;
-
                 if (qr) {
                     console.log('QR Code recebido, escaneie com seu celular:');
                     toString(qr, {type: "terminal", small: true}, (err, url) => {
@@ -42,18 +41,20 @@ export class BaileysService {
                         console.log(url)
                     })
                 }
-
                 if (connection === 'close') {
                     const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
-                    console.log('Conexão fechada. Motivo:', lastDisconnect?.error, '. Reconectando:', shouldReconnect);
+                    console.info('Conexão fechada. Motivo:', lastDisconnect?.error, '. Reconectando:', shouldReconnect);
                     if (shouldReconnect) startBot();
                     else reject(new Error("Conexão fechada permanentemente."));
                 } else if (connection === 'open') {
-                    console.log('Bot conectado com sucesso! 🤖');
+                    console.info('[BaileysService] Bot conectado com sucesso! 🤖');
+                    const groups = await this.sock!.groupFetchAllParticipating()
+                    const groupIds = Object.keys(groups)
+                    if (groupIds.length > 0)
+                        await this.redisService.addToSet("bot:groups", groupIds)
                     resolve()
                 }
             });
-            this.sock.ev.on('creds.update', saveCreds);
             // 4. Delegar o evento de mensagem para a instância do MessageHandler
             this.sock.ev.on('messages.upsert', (m) => this.messageHandler.handleMessage(this.sock!, m));
         })

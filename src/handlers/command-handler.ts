@@ -32,7 +32,6 @@ export class CommandHandler {
         let groupMetadata: GroupMetadata;
         let groupName: string;
 
-
         switch (command.toLowerCase()) {
             case 'resume':
             case 'resumo':
