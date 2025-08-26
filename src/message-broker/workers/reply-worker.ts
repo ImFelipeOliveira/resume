@@ -2,17 +2,14 @@ import {RabbitMQ} from "../../adapters/rabbitmq";
 import {IAdapterFactory} from "../../adapters/interfaces/IAdapter-factory";
 import {env} from "../../config/env";
 import {replyPayload} from "./summary-worker";
-import {IServiceFactory} from "../../services/interfaces/IService-factory";
 import {BaileysService} from "../../services/baileys-service";
 
 export class ReplyWorker {
     private readonly rabbitMQ: Promise<RabbitMQ>
     private readonly queueName: string = env.rabbitmq.queues.reply!
-    private baileysService: BaileysService;
 
-    constructor(private adapterFactory: IAdapterFactory, private serviceFactory: IServiceFactory) {
+    constructor(private adapterFactory: IAdapterFactory, private baileysService: BaileysService) {
         this.rabbitMQ = this.adapterFactory.createRabbitMQAdapter()
-        this.baileysService = this.serviceFactory.createBaileysService()
     }
 
     async processTask() {

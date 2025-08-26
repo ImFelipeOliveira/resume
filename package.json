@@ -5,8 +5,12 @@
   "description": "Um bot de WhatsApp que resume conversas de grupo.",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+    "start": "npm run build && concurrently \"npm:start:bot\" \"npm:start:worker\"",
+    "start:bot": "node dist/bot.js",
+    "start:worker": "node dist/worker.js",
+    "dev": "concurrently --kill-others-on-fail \"npm:dev:bot\" \"npm:dev:worker\"",
+    "dev:bot": "ts-node-dev --respawn --transpile-only src/bot.ts",
+    "dev:worker": "ts-node-dev --respawn --transpile-only src/worker.ts"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +36,7 @@
     "@types/qrcode": "^1.5.5",
     "@types/strip-bom": "^3.0.0",
     "@types/strip-json-comments": "^0.0.30",
+    "concurrently": "^9.2.1",
     "ts-node-dev": "^2.0.0"
   }
 }

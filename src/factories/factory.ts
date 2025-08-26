@@ -40,9 +40,9 @@ export const factory: IFactory = {
             factory.ServiceFactory,
             factory.QueueFactory
         ),
-        createReplyWorker: () => new ReplyWorker(
+        createReplyWorker: (baileyService: BaileysService) => new ReplyWorker(
             factory.AdapterFactory,
-            factory.ServiceFactory
+            baileyService
         )
     }
 }
