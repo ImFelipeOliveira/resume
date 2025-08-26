@@ -31,7 +31,6 @@ export class SummaryWorker {
     async processTask() {
         const adapter = await this.rabbitMQ;
         await adapter.consume(this.queueName, async (msg: any) => {
-            if (!msg) return;
             try {
                 const input: taskPayload = JSON.parse(msg)
                 if (typeof input.message === "string") {
@@ -41,6 +40,7 @@ export class SummaryWorker {
                     const message = await this.geminiService.summarizeMessages(input.message)
                     await this.sendToReply({groupId: input.groupId, message})
                 }
+                adapter.ack(msg)
             } catch (error) {
                 adapter.nack(msg, false)
             }
