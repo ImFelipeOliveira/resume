@@ -31,7 +31,6 @@ export const factory: IFactory = {
         createSummaryQueue: () => new SummaryQueue(factory.AdapterFactory),
         createReplyQueue: () => new ReplyQueue(
             factory.AdapterFactory,
-            factory.ServiceFactory
         )
     },
     WorkerFactory: {
