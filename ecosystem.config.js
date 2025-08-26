@@ -9,7 +9,7 @@ module.exports = {
         {
             name   : "worker",
             script : "./dist/worker.js",
-            instances: 10,
+            instances: "max",
             exec_mode: "cluster",
         }
     ]
