@@ -34,6 +34,7 @@ Usuário (WhatsApp) <--> [ 🤖 Bot (Baileys) ] <--> [ 📨 RabbitMQ (Fila de Ta
 - **RabbitMQ**: Como message broker para a comunicação entre o Bot e o Worker.
 - **Redis**: Para o armazenamento de sessão do Baileys.
 - **Express**: Para servir o QR Code.
+- **PM2**: Para gerenciamento de processos e escalabilidade em produção.
 - **Pino**: Para logging.
 
 ## 🚀 Começando
