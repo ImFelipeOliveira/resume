@@ -31,7 +31,7 @@ export class SummaryWorker {
     async processTask() {
         const adapter = await this.rabbitMQ;
         await adapter.consume(this.queueName, async (msg: any) => {
-            const input: taskPayload = JSON.parse(msg.content)
+            const input: taskPayload = JSON.parse(msg.content.toString())
             console.log(input)
             if (typeof input.message === "string") {
                 const message = await this.geminiService.customPrompt(input.message)
