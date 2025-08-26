@@ -32,13 +32,17 @@ export class SummaryWorker {
         const adapter = await this.rabbitMQ;
         await adapter.consume(this.queueName, async (msg: any) => {
             if (!msg) return;
-            const input: taskPayload = JSON.parse(msg)
-            if (typeof input.message === "string") {
-                const message = await this.geminiService.customPrompt(input.message)
-                await this.sendToReply({groupId: input.groupId, message})
-            } else {
-                const message = await this.geminiService.summarizeMessages(input.message)
-                await this.sendToReply({groupId: input.groupId, message})
+            try {
+                const input: taskPayload = JSON.parse(msg)
+                if (typeof input.message === "string") {
+                    const message = await this.geminiService.customPrompt(input.message)
+                    await this.sendToReply({groupId: input.groupId, message})
+                } else {
+                    const message = await this.geminiService.summarizeMessages(input.message)
+                    await this.sendToReply({groupId: input.groupId, message})
+                }
+            } catch (error) {
+                adapter.nack(msg, false)
             }
         })
     }

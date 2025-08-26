@@ -42,4 +42,12 @@ export class RabbitMQ {
     getConnection(): ChannelModel | null {
         return this.connection;
     }
+
+    nack(msg: any, allUpTo?: boolean) {
+        this.channel.nack(msg, allUpTo)
+    }
+
+    ack(msg: any) {
+        this.channel.ack(msg)
+    }
 }

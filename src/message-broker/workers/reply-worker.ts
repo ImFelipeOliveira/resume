@@ -16,8 +16,14 @@ export class ReplyWorker {
         const adapter = await this.rabbitMQ
         await adapter.consume(this.queueName, async (msg: any) => {
             if (!msg) return;
-            const input: replyPayload = JSON.parse(msg)
-            await this.baileysService.sendMessage(input.groupId, input.message)
+            try {
+                const input: replyPayload = JSON.parse(msg)
+                await this.baileysService.sendMessage(input.groupId, input.message)
+                adapter.ack(msg)
+            } catch (error) {
+                adapter.nack(msg, false)
+            }
+
         })
     }
 }
