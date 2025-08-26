@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "npm run build && concurrently \"npm:start:bot\" \"npm:start:worker\"",
+    "start:prod": "concurrently \"npm:start:bot\" \"npm:start:worker\"",
     "start:bot": "node dist/bot.js",
     "start:worker": "node dist/worker.js",
     "dev": "concurrently --kill-others-on-fail \"npm:dev:bot\" \"npm:dev:worker\"",

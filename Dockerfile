@@ -1,21 +1,30 @@
 # 1. Estágio de Build: Instala dependências e compila o TypeScript
 FROM node:20-alpine AS builder
 WORKDIR /usr/src/app
-
 COPY package*.json ./
 # Usa 'npm ci' para builds mais rápidos e consistentes em produção
 RUN npm ci
-
 COPY . .
 RUN npm run build
+
+# Remove as dependências de desenvolvimento para limpar a pasta node_modules
+RUN npm prune --omit=dev
 
 # 2. Estágio de Produção: Copia apenas o necessário para rodar
 FROM node:20-alpine
 WORKDIR /usr/src/app
 
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+# Copia os arquivos de configuração do projeto
 COPY --from=builder /usr/src/app/package*.json ./
 
+# Copia apenas as dependências de PRODUÇÃO
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+# Define um volume para persistir os dados de autenticação do Baileys
+VOLUME /usr/src/app/auth_info_baileys
+
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# Usa o novo script que não tenta rodar o build novamente
+CMD ["npm", "run", "start:prod"]
