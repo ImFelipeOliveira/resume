@@ -6,12 +6,10 @@ import {SummaryQueue} from "../message-broker/queue/summary-queue";
 
 export class CommandHandler {
     private redisClient: RedisClientService;
-    private geminiService: GeminiService;
     private summaryQueue: SummaryQueue;
 
     constructor(private factory: IFactory) {
         this.redisClient = factory.ServiceFactory.createRedisService()
-        this.geminiService = factory.ServiceFactory.createGeminiService()
         this.summaryQueue = factory.QueueFactory.createSummaryQueue()
     }
 
@@ -60,27 +58,21 @@ export class CommandHandler {
             case 'resume':
             case 'resumo':
                 targetDate = this.parseDateFromArgs(args);
-
                 if (!targetDate) {
-
                     return;
                 }
                 const messages: MessageData[] = await this.redisClient.getMessagesByDate(groupId, targetDate);
-
                 if (messages.length === 0) {
                     const dateString = targetDate.toLocaleDateString('pt-BR');
                     const responseText = args.length > 0 ? `Nenhuma mensagem registrada na data ${dateString}.` : 'Nenhuma mensagem registrada hoje.';
                     await sock.sendMessage(groupId, {text: responseText});
                     return;
                 }
-
                 groupMetadata = await sock.groupMetadata(groupId);
                 groupName = groupMetadata.subject;
-
                 await sock.sendMessage(groupId, {text: `Ok! ${groupName}, estou preparando o resumo... 🧠`});
                 await this.summaryQueue.enqueue({groupId: groupId, message: messages})
                 break;
-
             default:
                 await sock.sendMessage(groupId, {text: 'Comando não reconhecido.'});
                 break;

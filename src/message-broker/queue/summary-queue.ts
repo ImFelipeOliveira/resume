@@ -18,6 +18,7 @@ export class SummaryQueue {
 
     async enqueue(payload: taskPayload) {
         const adapter = await this.rabbitMQ;
+        console.log(payload)
         await adapter.sendToQueue(this.queueName, JSON.stringify(payload));
     }
 }
