@@ -21,9 +21,6 @@ COPY --from=builder /usr/src/app/package*.json ./
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 
-# Define um volume para persistir os dados de autenticação do Baileys
-VOLUME /usr/src/app/auth_info_baileys
-
 EXPOSE 3000
 
 # Usa o novo script que não tenta rodar o build novamente
