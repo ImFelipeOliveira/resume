@@ -39,6 +39,7 @@ export class GeminiService {
         const prompt = `
         Você é um assistente que resume conversas de um grupo de WhatsApp. 
         Abaixo estão as mensagens de um dia. Crie um resumo claro e conciso em português dos principais tópicos discutidos, usando bullet points.
+        O resumo deve ser o menor possível, pois a sua finalidade como bot é resumir.
         Conversa: ${formattedMessages} Resumo:`;
 
         try {

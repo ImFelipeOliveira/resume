@@ -1,9 +1,15 @@
 import {GroupMetadata, proto, WASocket} from "@whiskeysockets/baileys";
-import {RedisClient} from "../services/redis-service";
+import {MessageData, RedisClientService} from "../services/redis-service";
 import {GeminiService} from "../services/ai-service";
+import {IFactory} from "../factories/interfaces/IFactory";
 
 export class CommandHandler {
-    constructor(private readonly redisClient: RedisClient, private readonly aiService: GeminiService) {
+    private redisClient: RedisClientService;
+    private geminiService: GeminiService;
+
+    constructor(private factory: IFactory) {
+        this.redisClient = factory.ServiceFactory.createRedisService()
+        this.geminiService = factory.ServiceFactory.createGeminiService()
     }
 
     parseDateFromArgs(args: string[]): Date | null {
@@ -28,18 +34,17 @@ export class CommandHandler {
 
         switch (command.toLowerCase()) {
             case 'bom-dia':
-            case 'bom dia':
                 targetDate = this.parseDateFromArgs(args);
                 groupMetadata = await sock.groupMetadata(groupId);
                 groupName = groupMetadata.subject;
 
-                const message = await this.aiService.customPrompt(
+                const message = await this.geminiService.customPrompt(
                     `Você é um bot de um grupo de WhatsApp.  
                             Alguém te deu "bom dia". O nome do grupo é ${groupName}.  
                             
                             Responda **exatamente nesse formato**:  
                             
-                            Escreva: "Bom dia, ${groupName} ☀️"  
+                            Bom dia, ${groupName} ☀️  
                             Logo abaixo, escreva uma mensagem motivacional curta (2 a 3 frases),  
                                no estilo de correntes de WhatsApp de pessoas idosas:  
                                - linguagem simples e positiva  
@@ -59,7 +64,7 @@ export class CommandHandler {
 
                     return;
                 }
-                const messages = await this.redisClient.getMessagesByDate(groupId, targetDate);
+                const messages: MessageData[] = await this.redisClient.getMessagesByDate(groupId, targetDate);
 
                 if (messages.length === 0) {
                     const dateString = targetDate.toLocaleDateString('pt-BR');
@@ -72,7 +77,7 @@ export class CommandHandler {
                 groupName = groupMetadata.subject;
 
                 await sock.sendMessage(groupId, {text: `Ok! ${groupName}, estou preparando o resumo... 🧠`});
-                const summary = await this.aiService.summarizeMessages(messages);
+                const summary = await this.geminiService.summarizeMessages(messages);
                 await sock.sendMessage(groupId, {text: `*Resumo:*\n\n${summary}`});
                 break;
 

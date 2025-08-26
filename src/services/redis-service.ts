@@ -11,7 +11,7 @@ export interface MessageData {
 }
 
 
-export class RedisClient {
+export class RedisClientService {
     private redisClient: RedisClientType;
 
     constructor() {
