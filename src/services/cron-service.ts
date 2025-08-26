@@ -39,7 +39,8 @@ export class CronService {
                         const groupMetadata = await this.baileysService.getGroupMetadata(groupId)
                         const groupName = groupMetadata.subject
                         const prompt = `Você é um bot de um grupo de WhatsApp.  
-                            Alguém te deu "bom dia". O nome do grupo é ${groupName}.  
+                            Esta deve ser uma mensagem automática que é enviada todos
+                            os dias as 7:00.
                             
                             Responda **exatamente nesse formato**:  
                             
@@ -49,7 +50,8 @@ export class CronService {
                                - linguagem simples e positiva  
                                - incluir emojis (flores, sol, café, corações etc.)  
                                - trazer uma ideia de esperança, paz ou alegria para o dia.  
-                            
+                              
+                            Informe que está é uma mensagem automática.
                             Não adicione nada além disso.
                             `
                         await this.summaryQueue.enqueue({groupId: groupId, message: prompt})
