@@ -21,10 +21,7 @@ async function main() {
         await connectToWhatsApp();
         console.log('[Bot] Conexão inicial estabelecida. Iniciando o Reply Worker...');
         const replyWorker = factory.WorkerFactory.createReplyWorker(baileysService);
-        replyWorker.processTask().catch(err => {
-            console.error('[Bot] O Reply Worker encontrou um erro fatal:', err);
-            process.exit(1);
-        });
+        await replyWorker.processTask()
     } catch (err) {
         console.error("[Bot] Um erro crítico ocorreu durante a inicialização: ", err);
         process.exit(1);
