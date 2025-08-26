@@ -39,11 +39,17 @@ export class RedisClientService {
     async getMessagesByDate(groupId: string, date: Date): Promise<MessageData[]> {
         const key = this.getRedisKey(groupId, date);
         const messageStrings = await this.redisClient.lRange(key, 0, -1);
-
-        if (!messageStrings || messageStrings.length === 0) {
-            return [];
-        }
-
+        if (!messageStrings || messageStrings.length === 0) return [];
         return messageStrings.map((msg) => JSON.parse(msg) as MessageData).reverse()
+    }
+
+    async addToSet(key: string, members: string | string[]) {
+        if (!this.isConnected) await this.connect();
+        return this.client.sAdd(key, members);
+    }
+
+    async getSetMembers(key: string): Promise<string[]> {
+        if (!this.isConnected) await this.connect();
+        return this.client.sMembers(key);
     }
 }

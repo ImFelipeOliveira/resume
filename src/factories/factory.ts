@@ -9,6 +9,7 @@ import {SummaryQueue} from "../message-broker/queue/summary-queue";
 import {SummaryWorker} from "../message-broker/workers/summary-worker";
 import {ReplyQueue} from "../message-broker/queue/reply-queue";
 import {ReplyWorker} from "../message-broker/workers/reply-worker";
+import {CronService} from "../services/cron-service";
 
 
 const geminiService = new GeminiService()
@@ -21,7 +22,12 @@ export const factory: IFactory = {
     ServiceFactory: {
         createGeminiService: () => geminiService,
         createRedisService: () => redisService,
-        createBaileysService: () => new BaileysService(factory)
+        createBaileysService: () => new BaileysService(factory),
+        createCronService: (baileyService: BaileysService) => new CronService(
+            baileyService,
+            factory.ServiceFactory,
+            factory.QueueFactory
+        )
     },
     HandlerFactory: {
         createCommandHandler: () => new CommandHandler(factory),

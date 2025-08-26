@@ -34,27 +34,6 @@ export class CommandHandler {
 
 
         switch (command.toLowerCase()) {
-            case 'bom-dia':
-                targetDate = this.parseDateFromArgs(args);
-                groupMetadata = await sock.groupMetadata(groupId);
-                groupName = groupMetadata.subject;
-                const prompt = `Você é um bot de um grupo de WhatsApp.  
-                            Alguém te deu "bom dia". O nome do grupo é ${groupName}.  
-                            
-                            Responda **exatamente nesse formato**:  
-                            
-                            Bom dia, ${groupName} ☀️  
-                            Logo abaixo, escreva uma mensagem motivacional curta (2 a 3 frases),  
-                               no estilo de correntes de WhatsApp de pessoas idosas:  
-                               - linguagem simples e positiva  
-                               - incluir emojis (flores, sol, café, corações etc.)  
-                               - trazer uma ideia de esperança, paz ou alegria para o dia.  
-                            
-                            Não adicione nada além disso.
-                            `
-
-                await this.summaryQueue.enqueue({groupId: groupId, message: prompt})
-                break
             case 'resume':
             case 'resumo':
                 targetDate = this.parseDateFromArgs(args);

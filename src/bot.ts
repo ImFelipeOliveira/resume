@@ -15,6 +15,8 @@ async function main() {
                 console.error('[Bot] Falha ao conectar com o WhatsApp. Tentando novamente em 15 segundos...', err);
                 await new Promise(resolve => setTimeout(resolve, 15000));
                 await connectToWhatsApp();
+                const cronService = factory.ServiceFactory.createCronService(baileysService);
+                cronService.start();
             }
         };
         await connectToWhatsApp();

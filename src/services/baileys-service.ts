@@ -1,7 +1,7 @@
 import {IFactory} from "../factories/interfaces/IFactory";
 import {MessageHandler} from "../handlers/message-handler";
 import makeWASocket, {
-    DisconnectReason,
+    DisconnectReason, GroupMetadata,
     useMultiFileAuthState,
     WASocket
 } from "@whiskeysockets/baileys";
@@ -62,5 +62,11 @@ export class BaileysService {
     async sendMessage(groupId: string, message: string) {
         if (!this.sock) throw new Error("Bot não conectado")
         await this.sock.sendMessage(groupId, {text: message})
+    }
+
+    async getGroupMetadata(groupId: string): Promise<GroupMetadata> {
+        if (!this.sock)
+            throw new Error("Bot não conectado");
+        return this.sock.groupMetadata(groupId);
     }
 }
