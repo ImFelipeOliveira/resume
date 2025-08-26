@@ -16,6 +16,7 @@ WORKDIR /usr/src/app
 
 # Copia os arquivos de configuração do projeto
 COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /usr/src/app/ecosystem.config.js ./
 
 # Copia apenas as dependências de PRODUÇÃO
 COPY --from=builder /usr/src/app/dist ./dist

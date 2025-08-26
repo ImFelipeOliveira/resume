@@ -1,6 +1,5 @@
 import {GroupMetadata, proto, WASocket} from "@whiskeysockets/baileys";
 import {MessageData, RedisClientService} from "../services/redis-service";
-import {GeminiService} from "../services/ai-service";
 import {IFactory} from "../factories/interfaces/IFactory";
 import {SummaryQueue} from "../message-broker/queue/summary-queue";
 
