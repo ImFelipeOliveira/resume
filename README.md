@@ -52,7 +52,7 @@ Siga os passos abaixo para configurar e executar o projeto localmente.
 
 1.  Clone o repositório:
     ```bash
-    git clone <URL_DO_SEU_REPOSITORIO>
+    git clone https://github.com/ImFelipeOliveira/resume.git
     cd resume
     ```
 
