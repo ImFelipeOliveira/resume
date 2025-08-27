@@ -48,7 +48,7 @@ export class GeminiService {
         
         Manter o resumo pequeno, destacando apenas os pontos centrais.
         
-        Adicionar links, caso os considere importantes.
+        Adicionar as urls como nas mensagems, completas, caso os considere importantes.
         
         Conversa:
         ${formattedMessages}
