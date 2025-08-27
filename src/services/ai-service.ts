@@ -46,7 +46,9 @@ export class GeminiService {
         
         Evitar repetições e detalhes irrelevantes.
         
-        Manter o resumo o menor possível, destacando apenas os pontos centrais.
+        Manter o resumo pequeno, destacando apenas os pontos centrais.
+        
+        Adicionar links, caso os considere importantes.
         
         Conversa:
         ${formattedMessages}
